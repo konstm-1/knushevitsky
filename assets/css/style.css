@@ -140,6 +140,8 @@ p:last-child { margin-bottom: 0; }
   z-index: 100;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.6rem;
   justify-content: space-between;
   padding: 1.4rem clamp(1.25rem, 5vw, 3rem);
   background: transparent;
@@ -230,8 +232,17 @@ body[data-page="concerts"] .hero-media img { object-position: center center; }
 .nav-desktop {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 0.6rem;
   gap: clamp(1.2rem, 2.4vw, 2.4rem);
 }
+
+/* Brand never shrinks to make room for nav links — if the two don't fit
+   on one line at a given width (e.g. iPad in portrait, where the desktop
+   nav is still shown but the row is narrower than a laptop), nav-desktop
+   wraps onto a second line instead of squeezing into/over the logo. */
+.brand { flex-shrink: 0; }
 
 .nav-desktop a {
   font-size: 0.8rem;
@@ -280,17 +291,32 @@ body[data-page="concerts"] .hero-media img { object-position: center center; }
 
 .nav-toggle {
   display: none;
-  width: 34px; height: 24px;
-  position: relative;
+  align-items: center;
+  gap: 0.6rem;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
 }
 
-.nav-toggle span,
-.nav-toggle span::before,
-.nav-toggle span::after {
+.nav-toggle-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+.nav-toggle-bars {
+  display: block;
+  width: 26px; height: 18px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-toggle-bars,
+.nav-toggle-bars::before,
+.nav-toggle-bars::after {
   content: '';
   position: absolute;
   left: 0; right: 0;
@@ -299,13 +325,13 @@ body[data-page="concerts"] .hero-media img { object-position: center center; }
   transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
 }
 
-.nav-toggle span { top: 50%; }
-.nav-toggle span::before { top: -8px; }
-.nav-toggle span::after { top: 8px; }
+.nav-toggle-bars { top: 50%; }
+.nav-toggle-bars::before { top: -8px; }
+.nav-toggle-bars::after { top: 8px; }
 
-.nav-toggle.is-open span { background: transparent; }
-.nav-toggle.is-open span::before { top: 0; transform: rotate(45deg); }
-.nav-toggle.is-open span::after { top: 0; transform: rotate(-45deg); }
+.nav-toggle.is-open .nav-toggle-bars { background: transparent; }
+.nav-toggle.is-open .nav-toggle-bars::before { top: 0; transform: rotate(45deg); }
+.nav-toggle.is-open .nav-toggle-bars::after { top: 0; transform: rotate(-45deg); }
 
 .nav-mobile {
   position: fixed;
@@ -601,6 +627,11 @@ body[data-page="pedagogy"] .hero-content h1 {
   /* Trio photo on the bio page: +20% wider than the default 50/50 split
      (0.6 / 0.5 = 1.2), height follows via the stretch rule above. */
   body[data-page="bio"] .section--alt .split { grid-template-columns: 3fr 2fr; }
+
+  /* Bio content is only inlined under the homepage hero on mobile — on
+     desktop the standalone Bio page (with its own hero photo) is still
+     the way in, reached via nav, so this duplicate block stays hidden. */
+  .mobile-bio { display: none; }
 }
 
 /* Placeholder photo block (swap for <img> when real photos arrive) */
@@ -796,7 +827,7 @@ body[data-page="pedagogy"] .hero-content h1 {
 
 @media (max-width: 900px) {
   .nav-desktop { display: none; }
-  .nav-toggle { display: block; }
+  .nav-toggle { display: flex; }
   .brand { max-width: 70%; }
   .split { grid-template-columns: 1fr; }
   .split--reverse .zoom-media { order: 0; }
@@ -805,4 +836,9 @@ body[data-page="pedagogy"] .hero-content h1 {
   .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
   .concert-row { grid-template-columns: 1fr; gap: 0.6rem; }
   .concert-tag { justify-self: flex-start; }
+
+  /* On mobile the Bio page's own hero photo goes away entirely — its
+     content now lives inline on the homepage (.mobile-bio), reached
+     directly under the main hero rather than via a separate page/photo. */
+  body[data-page="bio"] .hero { display: none; }
 }
